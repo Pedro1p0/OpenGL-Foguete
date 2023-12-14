@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <GL/glut.h>
+#include <SOIL/SOIL.h>
+
 static double x = 0.0, x1 = 0.0, y1 = 0.1, z1 = 0.0, a1 = 0, a2 = 0, y2 = 0, z2 = 0;
 static double move = -60;
 static bool seperate = false;
@@ -10,6 +12,28 @@ static bool seperate = false;
 static float scale_factor = 1.0;
 static bool increasing = true;
 static GLfloat light_angle = 0.0;
+
+GLuint texture;
+GLUquadricObj *pSphere = NULL;
+
+/**
+ * @brief Carrega uma imagem como textura
+ * @param texture
+ * @param filename
+ */
+void loadTexture(GLuint *texture, char const *filename)
+{
+  *texture = SOIL_load_OGL_texture(filename, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, (SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT));
+
+  if (*texture == false)
+  {
+    printf("Erro do SOIL: '%s'\n", filename);
+  }
+  else
+  {
+    printf("%d \n", *texture);
+  }
+}
 
 void stroke_output(GLfloat x, GLfloat y, const char *const format, ...)
 {
@@ -308,21 +332,34 @@ void draw(double ang)
   rocket();
   glPopMatrix();
 
-  // Earth
+  // Terra
 
   glPushMatrix();
-  glColor3f(0, 0.4, 1);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, texture);
+
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  glColor3f(1.0, 1.0, 1.0);
   if (x >= 6.5)
   {
     glTranslatef(0, -18, -95);
-    glRotatef(10 * x, 0, 1, 0);
+    glRotatef(-90.0, 1, 0, 0); // deixa o eixo de rotação da Terra na vertical
+    glRotatef(10 * x, 0, 0, 1);
   }
   else
   {
     glTranslatef(0, -10 - x, -10 - 15 * x);
   }
 
-  glutSolidSphere(10, 100, 100);
+  gluSphere(pSphere, 10, 100, 100);
+
+  glDisable(GL_TEXTURE_2D);
   glPopMatrix();
 
   // Create Stars
@@ -457,9 +494,11 @@ int main(int argc, char *argv[])
 {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize(1000, 480);
+  glutInitWindowSize(1000, 720);
   glutInitWindowPosition(0, 0);
   glutCreateWindow("rocket");
+  char const *fileName = "./earth_texture.jpg";
+  loadTexture(&texture, fileName);
   glutDisplayFunc(display);
   glutIdleFunc(idle);
   glEnable(GL_LIGHTING);
@@ -467,6 +506,10 @@ int main(int argc, char *argv[])
   glShadeModel(GL_SMOOTH);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
+  pSphere = gluNewQuadric();
+  gluQuadricDrawStyle(pSphere, GLU_FILL);
+  gluQuadricNormals(pSphere, GLU_SMOOTH);
+  gluQuadricTexture(pSphere, GLU_TRUE);
   glutKeyboardFunc(mykey);
   glutCreateMenu(menu);
   glutAddMenuEntry("Launch       'p'", 1);
