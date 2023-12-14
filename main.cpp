@@ -3,12 +3,13 @@
 #include<stdarg.h>
 #include<stdio.h>
 #include<GL/glut.h>
-static double x=0.0,x1=0.0,y1=0.1,z1=0.0,a1=0,y2=0,z2=0;
+static double x=0.0,x1=0.0,y1=0.1,z1=0.0,a1=0,a2=0,y2=0,z2=0;
 static double move=-60;
 static bool seperate=false;
 
 static float scale_factor = 1.0;
 static bool increasing = true;
+static GLfloat light_angle = 0.0;
 
 void stroke_output(GLfloat x, GLfloat y, const char* const format, ...) {
     va_list args;
@@ -108,6 +109,7 @@ void rocket(){
 
 	// Cone superior do foguete
 	glPushMatrix();
+	// if para ejetar parte superior do foguete
 	if(x>=5.5){
 		glTranslatef(z2,-z2,z2);
 		glRotatef(a1,0,1,1);
@@ -142,7 +144,6 @@ void rocket(){
 	if(x>=5){
 		glTranslatef(0,y2,y2);
 		glRotatef(a1,0,1,1);
-	
 	}
 	
 	// Parte principal do foguete
@@ -153,11 +154,11 @@ void rocket(){
 	glRotatef(90,1,0,0);
 	glutSolidTorus(0.5,1,30,30);
 	glPopMatrix();
-	  
+
 	// parte inferior do foguete
     	glPushMatrix();
 	glTranslatef(0,-2.2,0);
-	glColor3f(0,0,1);
+	glColor3f(0.2,0.2,0.2);
 	glScaled(3,1.5,3);
 	glRotatef(270,1,0,0);
 	glutSolidCone(0.2,1,30,30);
@@ -167,10 +168,12 @@ void rocket(){
 
 	
 	// Parte direita do foguete
+	// rotaçao do booster
 	glPushMatrix();
 	glTranslatef(x1,-y1,z1);
 	glRotatef(a1,0,1,1);
 
+	// cone superior do booster direito
 	glPushMatrix();
 	glTranslatef(0.7,1,0);
 	glColor3f(0,0,1);
@@ -179,7 +182,7 @@ void rocket(){
 	glutSolidCone(0.2,1,30,30);
 	glPopMatrix();
 	
-	
+	// parte principal do booster direito
     glPushMatrix();
 	glTranslatef(0.7,-0.2,0);
 	glColor3f(0,1,1);
@@ -189,7 +192,7 @@ void rocket(){
 	glPopMatrix();
 	
 
-
+	// cone inferior do booster direito
     glPushMatrix();
 	glTranslatef(0.7,-2.0,0);
 	glColor3f(0,0,1);
@@ -202,11 +205,11 @@ void rocket(){
 
 
 	// Parte esquerda do foguete
-
+	// rotação do booster esquerdo
 	glPushMatrix();
 	glTranslatef(-x1,-y1,-z1);
 	glRotatef(-a1,0,1,1);
-
+	// cone superior do booster esquerdo 
 	glPushMatrix();
 	glTranslatef(-0.7,1,0);
 	glColor3f(0,0,1);
@@ -215,7 +218,7 @@ void rocket(){
 	glutSolidCone(0.2,1,30,30);
 	glPopMatrix();
 	
-	
+	// corpo do booster esquerdo
     glPushMatrix();
 	glTranslatef(-0.7,-0.2,0);
 	glColor3f(0,1,1);
@@ -225,7 +228,7 @@ void rocket(){
 	glPopMatrix();
 	
 
-
+	// cone inferior do booster esquerdo
     glPushMatrix();
 	glTranslatef(-0.7,-2.0,0);
 	glColor3f(0,0,1);
@@ -282,7 +285,7 @@ void stars(){
 
 // Draw rocket
 
-void rocket(double ang)
+void draw(double ang)
 {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -309,7 +312,7 @@ void rocket(double ang)
 	//Earth
 
 	glPushMatrix();
-	glColor3f(0,0,1);
+	glColor3f(0,0.4,1);
 	if(x>=6.5){
 		glTranslatef(0,-18,-95);
 		glRotatef(10*x,0,1,0);
@@ -356,9 +359,11 @@ void callback()
 	
 	if(x>5.5){
 	z2+=0.1;
+	a2+=0.1;
 	}
+	light_angle += 0.01; // Aumenta o ângulo da luz para simular o movimento do sol
 
-rocket(x);
+	draw(x);
 
   }
 
