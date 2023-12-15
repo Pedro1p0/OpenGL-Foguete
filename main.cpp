@@ -506,10 +506,10 @@ int main(int argc, char *argv[])
   glShadeModel(GL_SMOOTH);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
-  pSphere = gluNewQuadric();
-  gluQuadricDrawStyle(pSphere, GLU_FILL);
-  gluQuadricNormals(pSphere, GLU_SMOOTH);
-  gluQuadricTexture(pSphere, GLU_TRUE);
+  pSphere = gluNewQuadric();              // cria novo objeto quadric
+  gluQuadricDrawStyle(pSphere, GLU_FILL); // define tipo de desenho, nesse caso poligonos primitivos
+  gluQuadricNormals(pSphere, GLU_SMOOTH); // normais geradas para cada vértice do quadric
+  gluQuadricTexture(pSphere, GLU_TRUE);   // gera coordenadas de textura
   glutKeyboardFunc(mykey);
   glutCreateMenu(menu);
   glutAddMenuEntry("Launch       'p'", 1);
